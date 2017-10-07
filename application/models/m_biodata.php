@@ -20,10 +20,15 @@ class m_biodata extends CI_Model
 		return $query;
 	}
 
-	public function update_data($data,$id){
+	public function update_data($data,$id,$ijazah_baru){
+		$ambil = $this->get_data_id($id);
+		$ijazah_lama = $ambil->row('scan_ijazah');
+
 		$this->db->where('id',$id);
 		$this->db->update('tb_biodata',$data);
-
+		if($ijazah_lama!=$ijazah_baru && $ijazah_lama!=''){
+			unlink("assets/image/ijazah/".$ijazah_lama);
+		}
 		return TRUE;
 	}
 	public function fetch_data($num, $offset,$str_cari) {

@@ -27,7 +27,6 @@
 				 	<th>Aksi</th> 
 				</tr> 
 					<?php 
-					$no=1;
 					foreach ($hasil as $row) {
 					?> 
 				<tr> 
@@ -44,7 +43,6 @@
 					<?php 
 					} 
 					?> 
-					
 			</table>
 			<div class="col-md-12">
 				<!-- Menampilkan pagination -->

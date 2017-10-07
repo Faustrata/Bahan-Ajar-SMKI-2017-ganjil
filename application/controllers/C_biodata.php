@@ -9,14 +9,13 @@ class C_biodata extends CI_Controller
 		$this->load->model('m_biodata');
 		$this->load->library('session');
 		$this->load->library('pagination');
+		$this->load->library('upload');
 	}
 	public function index($id=null){
 		if (isset($_POST['q'])){
 			$str_cari = $this->input->post('cari');
 			$this->session->set_userdata('sess_cari',$str_cari);
 			
-			$this->session->sess_destroy();
-			$this->session->unset_userdata('ses_cari','');
 		}
 		else{
 			$str_cari = $this->session->userdata('sess_cari');
@@ -70,14 +69,41 @@ class C_biodata extends CI_Controller
 		$alamat = $this->input->post('alamat');
 		$usia = $this->input->post('usia');
 
+
+		$ijazah = $_FILES['ijazah_baru']['name'];
+		if($ijazah!=''){
+				list($txt, $ext) = explode(".", $ijazah);
+				$ijazah_baru 	 = "profil_".time().".".$ext;
+				$path = "./assets/images/ijazah/" ;
+
+				$config['file_name'] = $ijazah_baru;
+				$config['upload_path'] = $path;
+				$config['allowed_types'] = 'gif|jpg|png|gif|bmp|jpeg';
+				$config['max_size'] = '1050';
+				$config['max_width']  = '1024';
+				$config['max_height']  = '750';
+				$this->upload->initialize($config);
+				if ( ! $this->upload->do_upload('ijazah_baru'))
+				{	
+					echo $this->upload->display_errors();
+					exit;
+				}
+		}
+		else{
+			$ijazah_baru = $this->input->post('ijazah_lama');
+		}
+
+		
 		$data = array(
 					'nama' => $nama,
 					'jenis_kelamin' => $jenkel,
 					'alamat' => $alamat,
-					'usia' => $usia
+					'usia' => $usia,
+					'scan_ijazah' => $ijazah_baru
 			);
 
-		$update = $this->m_biodata->update_data($data,$id);
+
+		$update = $this->m_biodata->update_data($data,$id,$ijazah_baru);
 		if($update){
 			$this->session->set_flashdata('pesan','Data berhasil di update');
 			redirect('c_biodata/index');
